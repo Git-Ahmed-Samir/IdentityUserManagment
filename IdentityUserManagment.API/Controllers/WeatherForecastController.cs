@@ -1,9 +1,10 @@
+using IdentityUserManagment.Shared.Consts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityUserManagment.API.Controllers;
 
-[Authorize]
+[Authorize(Roles = Roles.SuperAdmin)]
 [ApiController]
 [Route("[controller]")]
 public class WeatherForecastController : ControllerBase

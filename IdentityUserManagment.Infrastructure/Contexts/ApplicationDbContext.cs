@@ -15,7 +15,7 @@ namespace IdentityUserManagment.Infrastructure.Contexts
                                 IdentityRoleClaim<string>,IdentityUserToken<string>>
     {
 
-        private readonly IConfiguration _configuration;
+        //private readonly IConfiguration _configuration;
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
@@ -24,13 +24,6 @@ namespace IdentityUserManagment.Infrastructure.Contexts
             base.OnConfiguring(optionsBuilder);
         }
 
-        /*
-Identity Models
-*/
-        public virtual DbSet<User> Users { get; set;}
-        public virtual DbSet<Role> Roles { get; set;}
-        public virtual DbSet<UserClaim> UserClaims { get; set;}
-        public virtual DbSet<UserRole> UserRoles { get; set;}
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -40,6 +33,12 @@ Identity Models
             builder.ApplyConfiguration(new RoleConfiguration());
             builder.ApplyConfiguration(new UserRoleConfiguration());
             builder.ApplyConfiguration(new UserClaimConfiguration());
+            builder.Entity<IdentityRoleClaim<string>>()
+                .ToTable("IdentityRoleClaims", "security");
+            builder.Entity<IdentityUserLogin<string>>()
+                .ToTable("IdentityUserLogins", "security");
+            builder.Entity<IdentityUserToken<string>>()
+                .ToTable("IdentityUserTokens", "security");
         }
 
     }

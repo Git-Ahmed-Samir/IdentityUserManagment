@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IdentityUserManagment.Infrastructure\IdentityUserManagment.Infrastructure.csproj" />
+    <ProjectReference Include="..\IdentityUserManagment.Shared\IdentityUserManagment.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
