@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using IdentityUserManagment.Domain.Models;
 using IdentityUserManagment.Shared.Consts;
-using IdentityUserManagment.Shared.DTOs.Account;
+using IdentityUserManagment.Shared.DTOs;
 using IdentityUserManagment.Shared.Helpers;
 using IdentityUserManagment.Shared.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -34,7 +34,7 @@ namespace IdentityUserManagment.Application.Services
         public async Task<ResponseModel<AuthModel>> RegisterAsync(RegisterDto model)
         {
             if (model == null)
-                return Response<AuthModel>.Failed("Invalid Data", (int)HttpStatusCode.NotAcceptable);
+                return Response<AuthModel>.Failed("Invalid Data", (int)HttpStatusCode.BadRequest);
 
             //check if user already exists
             if (await _userManager.FindByEmailAsync(model.Email) != null)
@@ -57,9 +57,36 @@ namespace IdentityUserManagment.Application.Services
             if (!addRole.Succeeded)
                 return Response<AuthModel>.Failed(string.Join("\n", addRole.Errors.Select(x => x.Description)), (int)HttpStatusCode.BadRequest);
 
+            var authModel = await GetAuthData(user);
+
+            return Response<AuthModel>.Success(authModel);
+        }
+
+        public async Task<ResponseModel<AuthModel>> LoginAsync(LoginDto model)
+        {
+            if (model == null)
+                return Response<AuthModel>.Failed("Invalid data", (int)HttpStatusCode.BadRequest);
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+                return Response<AuthModel>.Failed("Email or password are wrong", (int)HttpStatusCode.BadRequest);
+
+            var isPasswordMatch = await _userManager.CheckPasswordAsync(user, model.Password);
+
+            if(!isPasswordMatch)
+                return Response<AuthModel>.Failed("Email or password are wrong", (int)HttpStatusCode.BadRequest);
+
+            var authModel = await GetAuthData(user);
+
+            return Response<AuthModel>.Success(authModel);
+        }
+
+        private async Task<AuthModel> GetAuthData(User user)
+        {
             var jwtSecurityToken = await GenerateToken(user);
             var rolesList = await _userManager.GetRolesAsync(user);
-            var authModel = new AuthModel {
+            var authModel = new AuthModel
+            {
                 Email = user.Email,
                 Id = user.Id,
                 Username = user.UserName,
@@ -67,8 +94,7 @@ namespace IdentityUserManagment.Application.Services
                 Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
                 Roles = rolesList.ToList()
             };
-
-            return Response<AuthModel>.Success(authModel);
+            return authModel;
         }
         private async Task<JwtSecurityToken> GenerateToken(User user)
         {

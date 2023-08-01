@@ -1,5 +1,5 @@
 ﻿using IdentityUserManagment.Application.Services;
-using IdentityUserManagment.Shared.DTOs.Account;
+using IdentityUserManagment.Shared.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,10 +14,23 @@ public class AccountController : ControllerBase
         _accountService = accountService;
     }
 
-    [HttpPost]
+    [HttpPost("Register")]
     public async Task<IActionResult> Register(RegisterDto model)
     {
+        if(!ModelState.IsValid)
+            return BadRequest(ModelState);
         var result = await _accountService.RegisterAsync(model);
+        if (!result.IsSuccess)
+            return BadRequest(result);
+        return Ok(result);
+    }
+
+    [HttpPost("Login")]
+    public async Task<IActionResult> Login(LoginDto model)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        var result = await _accountService.LoginAsync(model);
         if (!result.IsSuccess)
             return BadRequest(result);
         return Ok(result);

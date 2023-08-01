@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using IdentityUserManagment.Domain.Models;
-using IdentityUserManagment.Shared.DTOs.Account;
+using IdentityUserManagment.Shared.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
