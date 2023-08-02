@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IdentityUserManagment.Domain\IdentityUserManagment.Domain.csproj" />
+    <ProjectReference Include="..\IdentityUserManagment.Shared\IdentityUserManagment.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
