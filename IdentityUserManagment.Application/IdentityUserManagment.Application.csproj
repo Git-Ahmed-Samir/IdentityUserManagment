@@ -5,10 +5,6 @@
     <ProjectReference Include="..\IdentityUserManagment.Shared\IdentityUserManagment.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
