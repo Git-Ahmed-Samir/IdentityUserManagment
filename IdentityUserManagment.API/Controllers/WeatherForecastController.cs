@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityUserManagment.API.Controllers;
 
-[Authorize(Roles = Roles.SuperAdmin)]
+[Authorize(Roles = Roles.Admin)]
 [ApiController]
 [Route("[controller]")]
 public class WeatherForecastController : ControllerBase
@@ -15,10 +15,12 @@ public class WeatherForecastController : ControllerBase
     };
 
     private readonly ILogger<WeatherForecastController> _logger;
+    private readonly IAuthorizationService _authorizationService;
 
-    public WeatherForecastController(ILogger<WeatherForecastController> logger)
+    public WeatherForecastController(ILogger<WeatherForecastController> logger, IAuthorizationService authorizationService)
     {
         _logger = logger;
+        _authorizationService = authorizationService;
     }
 
     [HttpGet(Name = "GetWeatherForecast")]

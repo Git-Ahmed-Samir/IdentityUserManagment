@@ -1,9 +1,11 @@
 ﻿using IdentityUserManagment.Application.Services;
 using IdentityUserManagment.Shared.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityUserManagment.API.Controllers;
+[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class AccountController : ControllerBase

@@ -12,7 +12,7 @@ using Microsoft.Extensions.Configuration;
 namespace IdentityUserManagment.Infrastructure.Contexts
 {
     public class ApplicationDbContext : IdentityDbContext<User,Role, string,UserClaim,UserRole,IdentityUserLogin<string>,
-                                IdentityRoleClaim<string>,IdentityUserToken<string>>
+                                RoleClaim,IdentityUserToken<string>>
     {
 
         //private readonly IConfiguration _configuration;
@@ -24,21 +24,19 @@ namespace IdentityUserManagment.Infrastructure.Contexts
             base.OnConfiguring(optionsBuilder);
         }
 
-
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
+            builder.ApplyConfiguration(new RoleClaimConfiguration());
             builder.ApplyConfiguration(new UserConfiguration());
             builder.ApplyConfiguration(new RoleConfiguration());
             builder.ApplyConfiguration(new UserRoleConfiguration());
             builder.ApplyConfiguration(new UserClaimConfiguration());
-            builder.Entity<IdentityRoleClaim<string>>()
-                .ToTable("IdentityRoleClaims", "security");
             builder.Entity<IdentityUserLogin<string>>()
-                .ToTable("IdentityUserLogins", "security");
+                .ToTable("UserLogins", "security");
             builder.Entity<IdentityUserToken<string>>()
-                .ToTable("IdentityUserTokens", "security");
+                .ToTable("UserTokens", "security");
         }
 
     }

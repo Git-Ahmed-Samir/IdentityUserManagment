@@ -1,8 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\IdentityUserManagment.Infrastructure\IdentityUserManagment.Infrastructure.csproj" />
     <ProjectReference Include="..\IdentityUserManagment.Shared\IdentityUserManagment.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\Product\" />
   </ItemGroup>
 
   <PropertyGroup>

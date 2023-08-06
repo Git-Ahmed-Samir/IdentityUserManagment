@@ -9,5 +9,6 @@ using System.Threading.Tasks;
 namespace IdentityUserManagment.Application.Services;
 public interface IUserService
 {
-    Task<ResponseModel<GetUserDto>> GetAllUsers();
+    Task<ResponseModel<List<GetUserDto>>> GetAllUsers();
+    Task<ResponseModel<bool>> AddRolesToUser(AddRolesToUserDto model);
 }

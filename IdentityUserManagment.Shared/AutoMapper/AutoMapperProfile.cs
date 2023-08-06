@@ -13,5 +13,10 @@ public class AutoMapperProfile : Profile
     public AutoMapperProfile()
     {
         CreateMap<RegisterDto, User>().ReverseMap();
+        CreateMap<User, GetUserDto>()
+            .ForMember(dest => dest.UserRoles, opt => opt.MapFrom(src => src.UserRoles.Select(x => x.Role.Name).ToList()))
+            .ReverseMap();
+
+        CreateMap<Role, GetRoleDto>();
     }
 }

@@ -18,8 +18,8 @@ public static class IdentityExtensions
         var allPermissions = Permissions.GeneratePermissionsForModule(module);
         foreach (var permission in allPermissions)
         {
-            if(! allClaims.Any(x => x.Type == Claims.Permission && x.Type == permission))
-                await roleManager.AddClaimAsync(role, claim: new Claim(Claims.Permission, permission));
+            if(! allClaims.Any(x => x.Type == Claims.Permission && x.Value == permission))
+                await roleManager.AddClaimAsync(role, new Claim(Claims.Permission, permission));
         }
     }
 }

@@ -15,6 +15,9 @@ namespace IdentityUserManagment.Domain.ModelConfiguration
             builder.ToTable("Roles", "security");
             builder.HasMany(r => r.UserRoles)
                 .WithOne(ur => ur.Role).HasForeignKey(ur => ur.RoleId).IsRequired();
+
+            builder.HasMany(r => r.RoleClaims)
+                .WithOne(rc => rc.Role).HasForeignKey(rc => rc.RoleId).IsRequired();
         }
     }
 }

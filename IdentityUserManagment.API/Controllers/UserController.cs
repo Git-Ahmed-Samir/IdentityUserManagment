@@ -1,4 +1,6 @@
-﻿using IdentityUserManagment.Shared.Consts;
+﻿using IdentityUserManagment.Application.Services;
+using IdentityUserManagment.Shared.Consts;
+using IdentityUserManagment.Shared.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,13 +9,28 @@ namespace IdentityUserManagment.API.Controllers;
 [ApiController]
 public class UserController : ControllerBase
 {
-    public UserController()
+    private readonly IUserService _userService;
+    public UserController(IUserService userService)
     {
-        
+        _userService = userService;
     }
-    [HttpGet]
-    public async Task<IActionResult> GetModules()
+    [HttpGet("GetAllUsers")]
+    public async Task<IActionResult> GetAllUsers()
     {
-        return Ok(Modules.GetAllModules());
+        var result = await _userService.GetAllUsers();
+        if (!result.IsSuccess)
+            return BadRequest(result);
+        return Ok(result);
+    }
+
+    [HttpPost("AddRolesToUser")]
+    public async Task<IActionResult> AddRolesToUser(AddRolesToUserDto model)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        var result = await _userService.AddRolesToUser(model);
+        if (!result.IsSuccess)
+            return BadRequest(result);
+        return Ok(result);
     }
 }

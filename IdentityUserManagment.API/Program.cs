@@ -3,8 +3,10 @@ using IdentityUserManagment.API.IoC;
 using IdentityUserManagment.Domain.Models;
 using IdentityUserManagment.Infrastructure.Contexts;
 using IdentityUserManagment.Infrastructure.Seeds;
+using IdentityUserManagment.Shared.Authorization.Permissions;
 using IdentityUserManagment.Shared.AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -13,6 +15,11 @@ using Microsoft.IdentityModel.Tokens;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+//Add Permission Policy Provider
+//builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+//builder.Services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+
 builder.Services.AddDbContext<ApplicationDbContext>(options => 
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), 
     a => a.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
@@ -21,6 +28,7 @@ builder.Services.AddIdentity<User, Role>(options => options.SignIn.RequireConfir
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+#region Auth
 builder.Services.AddAuthentication(options => {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -35,6 +43,12 @@ builder.Services.AddAuthentication(options => {
         ValidateIssuerSigningKey = true,
     };
 });
+
+builder.Services.AddAuthorization();
+builder.Services.AddSingleton<IAuthorizationHandler,PermissionAuthorizationHandler>();
+builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+
+#endregion
 
 //Register Services IoC
 DependencyContainer.RegisterServices(builder.Services);
