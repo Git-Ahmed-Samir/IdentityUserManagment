@@ -24,11 +24,86 @@ public class DatabaseSeeder : IDatabaseSeeder
     }
     public async Task SeedAsync()
     {
+        if (!await _context.Modules.AnyAsync())
+            await SeedModules();
+        if (!await _context.ModuleSections.AnyAsync())
+            await SeedModuleSections();
+        if (!await _context.Pages.AnyAsync())
+            await SeedPages();
+        if (!await _context.PageActions.AnyAsync())
+            await SeedPageActions();
+
         await SeedRoles();
         await SeedUsers();
         await SeedSuperAdminClaims();
+
     }
 
+    #region Seed Modules
+    private async Task SeedModules()
+    {
+        var data = new List<Module>
+        {
+            new Module { Id = 1, NameEn = "Manage Users", NameAr = "إدارة المستخدمين"},
+            new Module { Id = 2, NameEn = "Manage Stock", NameAr = "إدارة المخزن"}
+        };
+        await _context.Modules.AddRangeAsync(data);
+        await _context.SaveChangesAsync();
+    }
+    private async Task SeedModuleSections()
+    {
+        var data = new List<ModuleSection>
+        {
+            new ModuleSection { Id = 1, ModuleId = 1, NameEn = "Manage Users", NameAr = "إدارة المستخدمين"},
+            new ModuleSection { Id = 2, ModuleId = 2, NameEn = "Manage Stock", NameAr = "إدارة المخزن"}
+        };
+        await _context.ModuleSections.AddRangeAsync(data);
+        await _context.SaveChangesAsync();
+    }
+    private async Task SeedPages()
+    {
+        var data = new List<Page>
+        {
+            new Page { Id = 1, ModuleSectionId = 1, NameEn = "User", NameAr = "User"},
+            new Page { Id = 2, ModuleSectionId = 1, NameEn = "Role", NameAr = "Role"},
+
+            new Page { Id = 3, ModuleSectionId = 2, NameEn = "Category", NameAr = "Categories"},
+            new Page { Id = 4, ModuleSectionId = 2, NameEn = "Item", NameAr = "Items"},
+        };
+        await _context.Pages.AddRangeAsync(data);
+        await _context.SaveChangesAsync();
+    }
+    private async Task SeedPageActions()
+    {
+        var data = new List<PageAction>
+        {
+            new PageAction { Id = 1, PageId = 1, NameEn = PageActions.Create, NameAr = PageActions.Create },
+            new PageAction { Id = 2, PageId = 1, NameEn = PageActions.Read, NameAr = PageActions.Read },
+            new PageAction { Id = 3, PageId = 1, NameEn = PageActions.Update, NameAr = PageActions.Update },
+            new PageAction { Id = 4, PageId = 1, NameEn = PageActions.Delete, NameAr = PageActions.Delete },
+
+            new PageAction { Id = 5, PageId = 2, NameEn = PageActions.Create, NameAr = PageActions.Create },
+            new PageAction { Id = 6, PageId = 2, NameEn = PageActions.Read, NameAr = PageActions.Read },
+            new PageAction { Id = 7, PageId = 2, NameEn = PageActions.Update, NameAr = PageActions.Update },
+            new PageAction { Id = 8, PageId = 2, NameEn = PageActions.Delete, NameAr = PageActions.Delete },
+
+            new PageAction { Id = 9, PageId = 3, NameEn = PageActions.Create, NameAr = PageActions.Create },
+            new PageAction { Id = 10, PageId = 3, NameEn = PageActions.Read, NameAr = PageActions.Read },
+            new PageAction { Id = 11, PageId = 3, NameEn = PageActions.Update, NameAr = PageActions.Update },
+            new PageAction { Id = 12, PageId = 3, NameEn = PageActions.Delete, NameAr = PageActions.Delete },
+
+            new PageAction { Id = 13, PageId = 4, NameEn = PageActions.Create, NameAr = PageActions.Create },
+            new PageAction { Id = 14, PageId = 4, NameEn = PageActions.Read, NameAr = PageActions.Read },
+            new PageAction { Id = 15, PageId = 4, NameEn = PageActions.Update, NameAr = PageActions.Update },
+            new PageAction { Id = 16, PageId = 4, NameEn = PageActions.Delete, NameAr = PageActions.Delete },
+
+        };
+        await _context.PageActions.AddRangeAsync(data);
+        await _context.SaveChangesAsync();
+    }
+    #endregion
+
+    #region Seed Users
     private async Task SeedRoles()
     {
         string[] roles = new[] { Roles.SuperAdmin, Roles.Admin, Roles.User }; 
@@ -49,7 +124,6 @@ public class DatabaseSeeder : IDatabaseSeeder
             }
         }
     }
-
     private async Task SeedUsers()
     {
         var superAdminUsers = new List<User>
@@ -88,10 +162,12 @@ public class DatabaseSeeder : IDatabaseSeeder
             }
         }
     }
-
     private async Task SeedSuperAdminClaims()
     {
         var adminRole = await _roleManager.FindByNameAsync(Roles.SuperAdmin);
-        await _roleManager.AddPermissionClaimsToRole(adminRole, "Items");
+        var allPermissions = _context.Pages.Include(x => x.PageActions).SelectMany(x => x.PageActions.Select(pa => Claims.Permission + '.' + x.NameEn + '.' + pa.NameEn)).ToList();
+        await _roleManager.AddPermissionClaimsToRole(adminRole, allPermissions);
     }
+    #endregion
+
 }

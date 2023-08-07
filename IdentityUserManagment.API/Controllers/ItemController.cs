@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using IdentityUserManagment.Shared.Consts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,7 +10,7 @@ namespace IdentityUserManagment.API.Controllers;
 public class ItemController : ControllerBase
 {
     [HttpGet("Get")]
-    [Authorize(Policy = "Permissions.Items.View")]
+    [Authorize(Policy = $"{Claims.Permission}.{Pages.Item}.{PageActions.Read}")]
     public async Task<IActionResult> Get()
     {
         return Ok("kjsglk");
