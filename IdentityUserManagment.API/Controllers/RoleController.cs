@@ -39,9 +39,9 @@ public class RoleController : ControllerBase
 
     [Authorize(policy: $"{Claims.Permission}.{Pages.Role}.{PageActions.Read}")]
     [HttpGet("GetPermissions")]
-    public async Task<IActionResult> GetPermissions(string roleId)
+    public async Task<IActionResult> GetPermissions(string roleName)
     {
-        var result = await _roleService.GetPermissions(roleId);
+        var result = await _roleService.GetPermissions(roleName);
         if (!result.IsSuccess)
             return BadRequest(result);
         return Ok(result);

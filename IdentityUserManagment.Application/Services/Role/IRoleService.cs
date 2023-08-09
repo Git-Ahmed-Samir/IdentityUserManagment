@@ -12,6 +12,6 @@ public interface IRoleService
 {
     Task<ResponseModel<List<GetRoleDto>>> GetAll();
     Task<ResponseModel<GetRoleDto>> Add(string roleName);
-    Task<ResponseModel<List<PermissionVM>>> GetPermissions(string roleId);
+    Task<ResponseModel<List<ModuleDto>>> GetPermissions(string roleName);
     Task<ResponseModel<bool>> UpdatePermissions(UpdateRolePermissionsVM model);
 }

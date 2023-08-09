@@ -44,8 +44,8 @@ public class DatabaseSeeder : IDatabaseSeeder
     {
         var data = new List<Module>
         {
-            new Module { Id = 1, NameEn = "Manage Users", NameAr = "إدارة المستخدمين"},
-            new Module { Id = 2, NameEn = "Manage Stock", NameAr = "إدارة المخزن"}
+            new Module { Id = 1, Name = "Manage Users", Name_ar = "إدارة المستخدمين"},
+            new Module { Id = 2, Name = "Manage Stock", Name_ar = "إدارة المخزن"}
         };
         await _context.Modules.AddRangeAsync(data);
         await _context.SaveChangesAsync();
@@ -54,8 +54,8 @@ public class DatabaseSeeder : IDatabaseSeeder
     {
         var data = new List<ModuleSection>
         {
-            new ModuleSection { Id = 1, ModuleId = 1, NameEn = "Manage Users", NameAr = "إدارة المستخدمين"},
-            new ModuleSection { Id = 2, ModuleId = 2, NameEn = "Manage Stock", NameAr = "إدارة المخزن"}
+            new ModuleSection { Id = 1, ModuleId = 1, Name = "Manage Users", Name_ar = "إدارة المستخدمين"},
+            new ModuleSection { Id = 2, ModuleId = 2, Name = "Manage Stock", Name_ar = "إدارة المخزن"}
         };
         await _context.ModuleSections.AddRangeAsync(data);
         await _context.SaveChangesAsync();
@@ -64,11 +64,11 @@ public class DatabaseSeeder : IDatabaseSeeder
     {
         var data = new List<Page>
         {
-            new Page { Id = 1, ModuleSectionId = 1, NameEn = "User", NameAr = "User"},
-            new Page { Id = 2, ModuleSectionId = 1, NameEn = "Role", NameAr = "Role"},
+            new Page { Id = 1, ModuleSectionId = 1, Name = "User", Name_ar = "User"},
+            new Page { Id = 2, ModuleSectionId = 1, Name = "Role", Name_ar = "Role"},
 
-            new Page { Id = 3, ModuleSectionId = 2, NameEn = "Category", NameAr = "Categories"},
-            new Page { Id = 4, ModuleSectionId = 2, NameEn = "Item", NameAr = "Items"},
+            new Page { Id = 3, ModuleSectionId = 2, Name = "Category", Name_ar = "Categories"},
+            new Page { Id = 4, ModuleSectionId = 2, Name = "Item", Name_ar = "Items"},
         };
         await _context.Pages.AddRangeAsync(data);
         await _context.SaveChangesAsync();
@@ -77,25 +77,25 @@ public class DatabaseSeeder : IDatabaseSeeder
     {
         var data = new List<PageAction>
         {
-            new PageAction { Id = 1, PageId = 1, NameEn = PageActions.Create, NameAr = PageActions.Create },
-            new PageAction { Id = 2, PageId = 1, NameEn = PageActions.Read, NameAr = PageActions.Read },
-            new PageAction { Id = 3, PageId = 1, NameEn = PageActions.Update, NameAr = PageActions.Update },
-            new PageAction { Id = 4, PageId = 1, NameEn = PageActions.Delete, NameAr = PageActions.Delete },
+            new PageAction { Id = 1, PageId = 1, Name = PageActions.Create, Name_ar = PageActions.Create },
+            new PageAction { Id = 2, PageId = 1, Name = PageActions.Read, Name_ar = PageActions.Read },
+            new PageAction { Id = 3, PageId = 1, Name = PageActions.Update, Name_ar = PageActions.Update },
+            new PageAction { Id = 4, PageId = 1, Name = PageActions.Delete, Name_ar = PageActions.Delete },
 
-            new PageAction { Id = 5, PageId = 2, NameEn = PageActions.Create, NameAr = PageActions.Create },
-            new PageAction { Id = 6, PageId = 2, NameEn = PageActions.Read, NameAr = PageActions.Read },
-            new PageAction { Id = 7, PageId = 2, NameEn = PageActions.Update, NameAr = PageActions.Update },
-            new PageAction { Id = 8, PageId = 2, NameEn = PageActions.Delete, NameAr = PageActions.Delete },
+            new PageAction { Id = 5, PageId = 2, Name = PageActions.Create, Name_ar = PageActions.Create },
+            new PageAction { Id = 6, PageId = 2, Name = PageActions.Read, Name_ar = PageActions.Read },
+            new PageAction { Id = 7, PageId = 2, Name = PageActions.Update, Name_ar = PageActions.Update },
+            new PageAction { Id = 8, PageId = 2, Name = PageActions.Delete, Name_ar = PageActions.Delete },
 
-            new PageAction { Id = 9, PageId = 3, NameEn = PageActions.Create, NameAr = PageActions.Create },
-            new PageAction { Id = 10, PageId = 3, NameEn = PageActions.Read, NameAr = PageActions.Read },
-            new PageAction { Id = 11, PageId = 3, NameEn = PageActions.Update, NameAr = PageActions.Update },
-            new PageAction { Id = 12, PageId = 3, NameEn = PageActions.Delete, NameAr = PageActions.Delete },
+            new PageAction { Id = 9, PageId = 3, Name = PageActions.Create, Name_ar = PageActions.Create },
+            new PageAction { Id = 10, PageId = 3, Name = PageActions.Read, Name_ar = PageActions.Read },
+            new PageAction { Id = 11, PageId = 3, Name = PageActions.Update, Name_ar = PageActions.Update },
+            new PageAction { Id = 12, PageId = 3, Name = PageActions.Delete, Name_ar = PageActions.Delete },
 
-            new PageAction { Id = 13, PageId = 4, NameEn = PageActions.Create, NameAr = PageActions.Create },
-            new PageAction { Id = 14, PageId = 4, NameEn = PageActions.Read, NameAr = PageActions.Read },
-            new PageAction { Id = 15, PageId = 4, NameEn = PageActions.Update, NameAr = PageActions.Update },
-            new PageAction { Id = 16, PageId = 4, NameEn = PageActions.Delete, NameAr = PageActions.Delete },
+            new PageAction { Id = 13, PageId = 4, Name = PageActions.Create, Name_ar = PageActions.Create },
+            new PageAction { Id = 14, PageId = 4, Name = PageActions.Read, Name_ar = PageActions.Read },
+            new PageAction { Id = 15, PageId = 4, Name = PageActions.Update, Name_ar = PageActions.Update },
+            new PageAction { Id = 16, PageId = 4, Name = PageActions.Delete, Name_ar = PageActions.Delete },
 
         };
         await _context.PageActions.AddRangeAsync(data);
@@ -165,7 +165,7 @@ public class DatabaseSeeder : IDatabaseSeeder
     private async Task SeedSuperAdminClaims()
     {
         var adminRole = await _roleManager.FindByNameAsync(Roles.SuperAdmin);
-        var allPermissions = _context.Pages.Include(x => x.PageActions).SelectMany(x => x.PageActions.Select(pa => Claims.Permission + '.' + x.NameEn + '.' + pa.NameEn)).ToList();
+        var allPermissions = _context.Pages.Include(x => x.PageActions).SelectMany(x => x.PageActions.Select(pa => Claims.Permission + '.' + x.Name + '.' + pa.Name)).ToList();
         await _roleManager.AddPermissionClaimsToRole(adminRole, allPermissions);
     }
     #endregion

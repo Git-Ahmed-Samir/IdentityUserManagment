@@ -13,18 +13,16 @@ namespace IdentityUserManagment.Application.Services;
 public class UserService : IUserService
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IRepository<User> _userRepository;
+    private readonly IRepository<User> _userRepo;
     private readonly IMapper _mapper;
     private readonly UserManager<User> _userManager;
-    private readonly SignInManager<User> _signInManager;
 
-    public UserService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<User> userManager, SignInManager<User> signInManager)
+    public UserService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<User> userManager)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
-        _userRepository = _unitOfWork.Repository<User>();
+        _userRepo = _unitOfWork.Repository<User>();
         _userManager = userManager;
-        _signInManager = signInManager;
     }
 
     public async Task<ResponseModel<bool>> AddRolesToUser(AddRolesToUserDto model)
@@ -46,14 +44,12 @@ public class UserService : IUserService
         if (!result.Succeeded)
             return Response<bool>.Failed(false, "Error Updating roles", (int)HttpStatusCode.BadRequest);
 
-        await _signInManager.RefreshSignInAsync(user);
-
         return Response<bool>.Success(true);
     }
 
     public async Task<ResponseModel<List<GetUserDto>>> GetAllUsers()
     {
-        var result = await _userRepository.Query()
+        var result = await _userRepo.Query()
             .ProjectTo<GetUserDto>(_mapper.ConfigurationProvider).ToListAsync();
 
         return Response<List<GetUserDto>>.Success(result);

@@ -28,6 +28,9 @@ builder.Services.AddIdentity<User, Role>(options => options.SignIn.RequireConfir
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+//Register Services IoC
+DependencyContainer.RegisterServices(builder.Services);
+
 #region Auth
 builder.Services.AddAuthentication(options => {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -45,13 +48,10 @@ builder.Services.AddAuthentication(options => {
 });
 
 builder.Services.AddAuthorization();
-builder.Services.AddSingleton<IAuthorizationHandler,PermissionAuthorizationHandler>();
+builder.Services.AddScoped<IAuthorizationHandler,PermissionAuthorizationHandler>();
 builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
 
 #endregion
-
-//Register Services IoC
-DependencyContainer.RegisterServices(builder.Services);
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 

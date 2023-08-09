@@ -4,7 +4,7 @@ namespace IdentityUserManagment.Shared.ViewModels;
 public class UpdateRolePermissionsVM
 {
     [Required]
-    public string RoleId { get; set; }
+    public string roleName { get; set; }
 
-    public List<PermissionVM> Permissions { get; set; }
+    public List<string> Permissions { get; set; }
 }

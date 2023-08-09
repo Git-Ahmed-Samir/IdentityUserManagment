@@ -1,6 +1,7 @@
 ﻿using IdentityUserManagment.Domain.IRepositories;
 using IdentityUserManagment.Domain.IUnitOfWork;
 using IdentityUserManagment.Domain.Models;
+using IdentityUserManagment.Shared.Consts;
 using IdentityUserManagment.Shared.Helpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -14,31 +15,31 @@ using System.Threading.Tasks;
 namespace IdentityUserManagment.Shared.Authorization.Permissions;
 public interface IPermissionService
 {
-    Task<HashSet<string>> GetUserPermissions(string userId);
+    Task<bool> CanAccess(string userId, string permission);
 
 }
 public class PermissionService : IPermissionService
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IRepository<User> _userRepository;
+    private readonly IRepository<User> _userRepo;
+    private readonly IRepository<RoleClaim> _roleClaimRepo;
 
     public PermissionService(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
-        _userRepository = _unitOfWork.Repository<User>();
+        _userRepo = _unitOfWork.Repository<User>();
+        _roleClaimRepo = _unitOfWork.Repository<RoleClaim>();
     }
 
-    public async Task<HashSet<string>> GetUserPermissions(string userId)
+    public async Task<bool> CanAccess(string userId, string permission)
     {
-        var roles = await _userRepository.Query(x => x.Id == userId)
-                .Include(x => x.UserRoles)
-                .ThenInclude(x => x.Role)
-                .ThenInclude(x => x.RoleClaims)
-                .SelectMany(x => x.UserRoles)
-                .Select(x => x.Role)
-                .SelectMany(x => x.RoleClaims)
-                .Select(x => x.ClaimValue).ToListAsync();
+        if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(permission))
+            return false;
 
-        return roles.ToHashSet<string>();
+        var userRoleIds = await _userRepo.Query(x => x.Id == userId)
+                .SelectMany(x => x.UserRoles).Select(x => x.RoleId).ToListAsync();
+
+        return await _roleClaimRepo.IsExistAsync(x => userRoleIds.Any(rId => rId == x.RoleId)
+                && x.ClaimType == Claims.Permission && x.ClaimValue == permission);
     }
 }

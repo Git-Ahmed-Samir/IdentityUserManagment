@@ -12,27 +12,24 @@ using System.Threading.Tasks;
 namespace IdentityUserManagment.Shared.Authorization.Permissions;
 public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
 {
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-
-    public PermissionAuthorizationHandler(IServiceScopeFactory serviceScopeFactory)
+    private readonly IPermissionService _permissionService;
+    public PermissionAuthorizationHandler(IPermissionService permissionService)
     {
-        _serviceScopeFactory = serviceScopeFactory;
+        _permissionService = permissionService;
     }
 
     //Verify permission from database [Server Side]
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
     {
         if (context.User == null)
+        {
+            context.Fail();
             return;
+        }
 
-        using IServiceScope scope = _serviceScopeFactory.CreateScope();
+        var canAccess = await _permissionService.CanAccess(context.User.GetUserId(), requirement.Permission);
 
-        var permissionService = scope.ServiceProvider.GetRequiredService<IPermissionService>();
-
-        var permissions = await permissionService.GetUserPermissions(context.User.GetUserId());
-
-        if (permissions.Contains(requirement.Permission))
-            context.Succeed(requirement);   
-
+        if (canAccess)
+            context.Succeed(requirement);
     }
 }

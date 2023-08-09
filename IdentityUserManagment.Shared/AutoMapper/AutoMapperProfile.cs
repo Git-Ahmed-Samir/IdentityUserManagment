@@ -19,5 +19,12 @@ public class AutoMapperProfile : Profile
             .ReverseMap();
 
         CreateMap<Role, GetRoleDto>();
+
+        #region Modules
+        CreateMap<Module, ModuleDto>();
+        CreateMap<ModuleSection, ModuleSectionDto>();
+        CreateMap<Page, PageDto>();
+        CreateMap<PageAction, PageActionDto>();
+        #endregion
     }
 }

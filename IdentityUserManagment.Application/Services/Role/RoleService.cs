@@ -17,16 +17,16 @@ public class RoleService : IRoleService
 {
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IRepository<Role> _roleRepository;
+    private readonly IRepository<Role> _roleRepo;
     private readonly RoleManager<Role> _roleManager;
-    private readonly IRepository<PageAction> _pageActionRepository;
+    private readonly IRepository<Module> _moduleRepo;
     public RoleService(IMapper mapper, IUnitOfWork unitOfWork, RoleManager<Role> roleManager)
     {
         _mapper = mapper;
         _unitOfWork = unitOfWork;
-        _roleRepository = _unitOfWork.Repository<Role>();
+        _roleRepo = _unitOfWork.Repository<Role>();
         _roleManager = roleManager;
-        _pageActionRepository = _unitOfWork.Repository<PageAction>();
+        _moduleRepo = _unitOfWork.Repository<Module>();
     }
 
     public async Task<ResponseModel<GetRoleDto>> Add(string roleName)
@@ -55,37 +55,32 @@ public class RoleService : IRoleService
 
     public async Task<ResponseModel<List<GetRoleDto>>> GetAll()
     {
-        var result = await _roleRepository.Query()
+        var result = await _roleRepo.Query()
             .ProjectTo<GetRoleDto>(_mapper.ConfigurationProvider).ToListAsync();
 
         return Response<List<GetRoleDto>>.Success(result);
     }
 
-    public async Task<ResponseModel<List<PermissionVM>>> GetPermissions(string roleId)
+    public async Task<ResponseModel<List<ModuleDto>>> GetPermissions(string roleName)
     {
-        if (string.IsNullOrWhiteSpace(roleId))
-            return Response<List<PermissionVM>>.Failed("Invalid roleId", (int)HttpStatusCode.BadRequest);
-        var role = await _roleManager.FindByIdAsync(roleId);
+        if (string.IsNullOrWhiteSpace(roleName))
+            return Response<List<ModuleDto>>.Failed("Invalid roleName", (int)HttpStatusCode.BadRequest);
+        var role = await _roleManager.FindByNameAsync(roleName);
         if (role is null)
-            return Response<List<PermissionVM>>.Failed("Role not found", (int)HttpStatusCode.NotFound);
-        var permissions = await _pageActionRepository.Query().Include(x => x.Page)
-            .ThenInclude(x => x.ModuleSection).ThenInclude(x => x.Module)
-            .Select(x => new PermissionVM
-            {
-                Module = x.Page.ModuleSection.Module.NameEn,
-                ModuleSection = x.Page.ModuleSection.NameEn,
-                Page = x.Page.NameEn,
-                PageAction = x.NameEn
-            }).ToListAsync();
+            return Response<List<ModuleDto>>.Failed("Role not found", (int)HttpStatusCode.NotFound);
+        var permissions = await _moduleRepo.Query()
+            .ProjectTo<ModuleDto>(_mapper.ConfigurationProvider).ToListAsync();
 
         var rolePermissions = await _roleManager.GetClaimsAsync(role);
-        foreach (var permission in permissions)
+        foreach (var page in permissions.SelectMany(x => x.ModuleSections).SelectMany(x => x.Pages))
         {
-            permission.IsSelected = rolePermissions.Any(x => x.Type == Claims.Permission
-                    && x.Value == $"{Claims.Permission}.{permission.Page}.{permission.PageAction}");
+            page.PageActions.ForEach(pa => {
+                pa.IsSelected = rolePermissions.Any(x => x.Type == Claims.Permission
+                    && x.Value == $"{Claims.Permission}.{page.Name}.{pa.Name}");
+            });
         }
 
-        return Response<List<PermissionVM>>.Success(permissions);
+        return Response<List<ModuleDto>>.Success(permissions);
     }
 
     public async Task<ResponseModel<bool>> UpdatePermissions(UpdateRolePermissionsVM model)
@@ -93,7 +88,7 @@ public class RoleService : IRoleService
         if (model == null)
             return Response<bool>.Failed("Invalid data", (int)HttpStatusCode.BadRequest);
 
-        var role = await _roleManager.FindByIdAsync(model.RoleId);
+        var role = await _roleManager.FindByNameAsync(model.roleName);
         if (role is null)
             return Response<bool>.Failed("Role Not Found", (int)HttpStatusCode.NotFound);
 
@@ -102,9 +97,7 @@ public class RoleService : IRoleService
         foreach (var claim in oldClaims)
             await _roleManager.RemoveClaimAsync(role, claim);
 
-        var newPermissions = model.Permissions.Where(x => x.IsSelected)
-            .Select(x => $"{Claims.Permission}.{x.Page}.{x.PageAction}").ToList();
-        await _roleManager.AddPermissionClaimsToRole(role, newPermissions);
+        await _roleManager.AddPermissionClaimsToRole(role, model.Permissions);
 
         return Response<bool>.Success(true);
     }
